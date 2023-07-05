@@ -1,0 +1,29 @@
+@inject IJSRuntime JSRuntime
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      // Load the userActivity.js file
+      await JSRuntime.InvokeVoidAsync("loadScript", "userActivity.js");
+
+      // Set the idle timeout duration (in milliseconds)
+      int idleTimeoutDuration = 30000; // 30 seconds
+
+      // Define the callback function to handle idle timeout
+      Func<Task> idleTimeoutCallback = async () =>
+      {
+        // Perform the desired actions when the user is idle
+        Console.WriteLine("User is idle for too long!");
+
+        // Update the UI or perform any other logic as needed
+
+        await InvokeAsync(StateHasChanged);
+      };
+
+      // Start the idle timer
+      await JSRuntime.InvokeVoidAsync("userActivity.startIdleTimer", DotNetObjectReference.Create(idleTimeoutCallback), idleTimeoutDuration);
+    }
+  }
+}
