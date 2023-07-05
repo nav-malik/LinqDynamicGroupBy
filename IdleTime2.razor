@@ -1,0 +1,37 @@
+@inject IJSRuntime JSRuntime
+
+@code {
+    [Parameter]
+    public int IdleTimeoutDuration { get; set; }
+
+    [Parameter]
+    public EventCallback OnUserIdle { get; set; }
+
+    private DotNetObjectReference<IdleTimer> dotNetRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dotNetRef = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("startIdleTimer", dotNetRef, IdleTimeoutDuration);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("resetIdleTimer");
+            await JSRuntime.InvokeVoidAsync("registerEventListeners", dotNetRef);
+        }
+    }
+
+    [JSInvokable]
+    public async Task UserIdle()
+    {
+        await OnUserIdle.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
+    }
+}
