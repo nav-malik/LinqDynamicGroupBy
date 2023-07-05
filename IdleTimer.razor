@@ -1,0 +1,27 @@
+@inject IJSRuntime JSRuntime
+
+<div style="display: none;">
+    <script src="userActivity.js"></script>
+</div>
+
+@code {
+    [Parameter]
+    public int IdleTimeoutDuration { get; set; }
+
+    [Parameter]
+    public EventCallback OnUserIdle { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("userActivity.startIdleTimer", DotNetObjectReference.Create(this), IdleTimeoutDuration);
+        }
+    }
+
+    [JSInvokable]
+    public async Task UserIdle()
+    {
+        await OnUserIdle.InvokeAsync();
+    }
+}
