@@ -1,0 +1,15 @@
+@inherits LayoutComponentBase
+
+<IdleTimer IdleTimeoutDuration="30000" OnUserIdle="HandleUserIdle" />
+
+<div>
+    <!-- Rest of the layout -->
+</div>
+
+@code {
+    private void HandleUserIdle()
+    {
+        // Perform actions when the user is idle
+        // For example, log out the user, redirect, or display a message
+    }
+}
